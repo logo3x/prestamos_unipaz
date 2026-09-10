@@ -12,6 +12,18 @@ class MigrateCommand extends BaseMigrateCommand
     {
         parent::initialize($input, $output);
 
-        $input->setOption('force', true);
+        if ($this->getLaravel()->environment() === 'production') {
+            $input->setOption('force', true);
+            $input->setOption('seed', true);
+        }
+    }
+
+    public function call($command, array $arguments = [])
+    {
+        if ($command === 'db:seed') {
+            $arguments['--force'] = true;
+        }
+
+        return parent::call($command, $arguments);
     }
 }
