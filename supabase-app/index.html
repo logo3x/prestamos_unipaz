@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Préstamo de Videobeams · UNIPAZ</title>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link rel="stylesheet" href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600">
+
+    <style>
+        :root {
+            --brand-50: oklch(0.97 0.014 254.6);
+            --brand-500: oklch(0.623 0.214 259.8);
+            --brand-600: oklch(0.546 0.245 262.9);
+            --brand-700: oklch(0.488 0.243 264.4);
+
+            --gris-50: #f9fafb;
+            --gris-100: #f3f4f6;
+            --gris-200: #e5e7eb;
+            --gris-300: #d1d5db;
+            --gris-400: #9ca3af;
+            --gris-500: #6b7280;
+            --gris-600: #4b5563;
+            --gris-700: #374151;
+            --gris-800: #1f2937;
+            --gris-900: #111827;
+
+            --rojo-50: #fef2f2;
+            --rojo-600: #dc2626;
+            --rojo-700: #b91c1c;
+            --ambar-50: #fffbeb;
+            --ambar-700: #b45309;
+            --ambar-800: #92400e;
+            --verde-50: #ecfdf5;
+            --verde-700: #047857;
+
+            --sombra: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --sombra-modal: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+
+            --fc-border-color: var(--gris-200);
+            --fc-today-bg-color: var(--brand-50);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--gris-50);
+            color: var(--gris-900);
+            font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+            font-feature-settings: 'cv11', 'ss01';
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body.sin-scroll { overflow: hidden; }
+
+        [hidden] { display: none !important; }
+
+        h1, h2, p { margin: 0; }
+
+        a { color: inherit; text-decoration: none; }
+
+        button, input, select, textarea { font: inherit; color: inherit; }
+
+        button { cursor: pointer; }
+
+        /* ---------- Pantallas centradas (carga, login, configuración) ---------- */
+
+        .pantalla-centrada {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .login { width: 100%; max-width: 24rem; }
+
+        .login-cabecera {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-cabecera .marca-logo {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.75rem;
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+        }
+
+        .login-cabecera h1 { font-size: 1.25rem; line-height: 1.75rem; font-weight: 600; }
+
+        .login-cabecera p { color: var(--gris-500); margin-top: 0.25rem; }
+
+        .separador {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 1.25rem 0;
+            color: var(--gris-400);
+            font-size: 0.75rem;
+        }
+
+        .separador::before, .separador::after {
+            content: '';
+            flex: 1;
+            border-top: 1px solid var(--gris-200);
+        }
+
+        .cargando { color: var(--gris-500); }
+
+        /* ---------- Barra de navegación ---------- */
+
+        .barra {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: rgb(255 255 255 / 0.9);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--gris-200);
+        }
+
+        .barra-interior {
+            max-width: 80rem;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            min-height: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .barra-izquierda { display: flex; align-items: center; gap: 1.5rem; min-width: 0; }
+
+        .marca { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; font-weight: 600; }
+
+        .marca-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 0.5rem;
+            background: var(--brand-600);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .enlaces { display: flex; align-items: center; gap: 0.25rem; }
+
+        .enlace {
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            color: var(--gris-600);
+            white-space: nowrap;
+            transition: color 150ms, background-color 150ms;
+        }
+
+        .enlace:hover { color: var(--gris-900); background: var(--gris-100); }
+
+        .enlace.activo { color: var(--brand-700); background: var(--brand-50); }
+
+        .enlaces-divisor { width: 1px; height: 1.25rem; background: var(--gris-200); margin: 0 0.25rem; }
+
+        .barra-derecha { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+
+        .usuario { display: flex; align-items: center; gap: 0.5rem; color: var(--gris-700); }
+
+        .avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 9999px;
+            background: var(--gris-200);
+            color: var(--gris-600);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 767px) {
+            .barra-interior { flex-wrap: wrap; padding: 0.75rem 1rem 0; min-height: 0; }
+            .barra-izquierda { display: contents; }
+            .enlaces {
+                order: 3;
+                width: 100%;
+                overflow-x: auto;
+                padding: 0.5rem 0;
+                scrollbar-width: none;
+            }
+            .marca-nombre, .usuario-nombre { display: none; }
+        }
+
+        /* ---------- Contenido ---------- */
+
+        .contenedor {
+            max-width: 80rem;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            animation: aparecer 0.3s var(--ease-out-strong);
+        }
+
+        @media (max-width: 767px) {
+            .contenedor { padding: 1.5rem 1rem; }
+        }
+
+        .encabezado {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .titulo { font-size: 1.25rem; line-height: 1.75rem; font-weight: 600; }
+
+        .titulo-separado { margin-bottom: 1.5rem; }
+
+        .subtitulo { color: var(--gris-500); margin-top: 0.25rem; }
+
+        .tarjeta {
+            background: #fff;
+            border: 1px solid var(--gris-200);
+            border-radius: 1rem;
+            box-shadow: var(--sombra);
+        }
+
+        .tarjeta-relleno { padding: 1.5rem; }
+
+        .tarjeta-calendario { padding: 1rem; }
+
+        /* ---------- Botones ---------- */
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border: 0;
+            border-radius: 0.5rem;
+            padding: 0.625rem 1rem;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: transform 150ms ease-out, background-color 150ms ease-out, opacity 150ms ease-out;
+        }
+
+        .btn:active:not(:disabled) { transform: scale(0.97); }
+
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .btn-primario { background: var(--brand-600); color: #fff; }
+        .btn-primario:hover:not(:disabled) { background: var(--brand-700); }
+
+        .btn-oscuro { background: var(--gris-900); color: #fff; }
+        .btn-oscuro:hover:not(:disabled) { background: var(--gris-800); }
+
+        .btn-secundario { background: var(--gris-100); color: var(--gris-700); }
+        .btn-secundario:hover:not(:disabled) { background: var(--gris-200); }
+
+        .btn-chico { padding: 0.375rem 0.75rem; }
+
+        .btn-bloque { width: 100%; }
+
+        .btn-texto {
+            background: none;
+            border: 0;
+            padding: 0;
+            font-weight: 500;
+            color: var(--gris-500);
+            transition: color 150ms;
+        }
+
+        .btn-texto:hover { color: var(--gris-900); }
+        .btn-texto.marca-color { color: var(--brand-600); }
+        .btn-texto.marca-color:hover { color: var(--brand-700); }
+        .btn-texto.peligro { color: var(--rojo-600); }
+        .btn-texto.peligro:hover { color: var(--rojo-700); }
+
+        /* ---------- Formularios ---------- */
+
+        .campo label {
+            display: block;
+            font-weight: 500;
+            color: var(--gris-700);
+            margin-bottom: 0.375rem;
+        }
+
+        .opcional { color: var(--gris-400); font-weight: 400; }
+
+        .campo input:not([type='file']), .campo select, .campo textarea {
+            width: 100%;
+            border: 1px solid var(--gris-300);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: #fff;
+            color: var(--gris-900);
+        }
+
+        .campo input::placeholder, .campo textarea::placeholder { color: var(--gris-400); }
+
+        .campo input:focus, .campo select:focus, .campo textarea:focus, .select-estado:focus {
+            outline: none;
+            border-color: var(--brand-500);
+            box-shadow: 0 0 0 2px color-mix(in oklch, var(--brand-500) 35%, transparent);
+        }
+
+        .campo input[type='file'] { width: 100%; color: var(--gris-600); }
+
+        .campo input[type='file']::file-selector-button {
+            margin-right: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            border: 0;
+            border-radius: 0.5rem;
+            background: var(--gris-100);
+            color: var(--gris-700);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .campo input[type='file']::file-selector-button:hover { background: var(--gris-200); }
+
+        .error { color: var(--rojo-600); font-size: 0.75rem; margin-top: 0.25rem; }
+        .error:empty { display: none; }
+
+        .ayuda { color: var(--gris-500); font-size: 0.75rem; margin-top: 0.25rem; }
+
+        .pila > * + * { margin-top: 1rem; }
+
+        .rejilla-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+
+        @media (max-width: 540px) {
+            .rejilla-2 { grid-template-columns: minmax(0, 1fr); }
+        }
+
+        .formulario-linea {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .formulario-linea .campo-crece { flex: 1; min-width: 10rem; }
+
+        .formulario-linea .botones { display: flex; align-items: center; gap: 1rem; padding-top: 1.625rem; }
+
+        .formulario-linea .btn { padding: 0.5rem 1rem; }
+
+        .filtros {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 1rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 767px) {
+            .filtros { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+
+        .aviso { border-radius: 0.5rem; padding: 0.625rem 0.75rem; margin-bottom: 1rem; }
+        .aviso-error { background: var(--rojo-50); color: var(--rojo-700); }
+        .aviso-info { background: var(--ambar-50); color: var(--ambar-800); }
+
+        /* ---------- Tablas ---------- */
+
+        .tabla-contenedor { overflow-x: auto; }
+
+        .tabla { width: 100%; border-collapse: collapse; }
+
+        .tabla thead { background: var(--gris-50); border-bottom: 1px solid var(--gris-200); }
+
+        .tabla th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 500;
+            color: var(--gris-500);
+            white-space: nowrap;
+        }
+
+        .tabla td { padding: 0.75rem 1rem; color: var(--gris-600); }
+
+        .tabla tbody tr + tr { border-top: 1px solid var(--gris-100); }
+
+        .tabla tbody tr:hover { background: var(--gris-50); }
+
+        .tabla .fuerte { color: var(--gris-900); }
+
+        .tabla .acciones { text-align: right; white-space: nowrap; }
+
+        .tabla .acciones > * + * { margin-left: 1rem; }
+
+        .tabla .vacio { padding: 3rem 1rem; text-align: center; color: var(--gris-500); }
+
+        .tabla .vacio a { display: inline-block; margin-top: 0.25rem; color: var(--brand-600); font-weight: 500; }
+
+        .insignia {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 9999px;
+            padding: 0.125rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: var(--gris-100);
+            color: var(--gris-700);
+            white-space: nowrap;
+        }
+
+        .estado-pendiente { background: var(--ambar-50); color: var(--ambar-700); }
+        .estado-confirmada, .estado-activo { background: var(--verde-50); color: var(--verde-700); }
+        .estado-cancelada, .estado-inactivo { background: var(--gris-100); color: var(--gris-500); }
+        .estado-rechazada { background: var(--rojo-50); color: var(--rojo-700); }
+
+        .select-estado {
+            border: 0;
+            border-radius: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .paginacion {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 1rem;
+            color: var(--gris-500);
+        }
+
+        .paginacion div { display: flex; gap: 0.5rem; }
+
+        /* ---------- Modal ---------- */
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            z-index: 40;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            animation: aparecer 0.2s var(--ease-out-strong);
+        }
+
+        .modal-fondo { position: absolute; inset: 0; background: rgb(17 24 39 / 0.5); }
+
+        .modal-panel {
+            position: relative;
+            width: 100%;
+            max-width: 42rem;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: var(--sombra-modal);
+        }
+
+        .modal-cabecera {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            background: #fff;
+            border-bottom: 1px solid var(--gris-100);
+        }
+
+        .modal-cabecera h1 { font-size: 1.125rem; line-height: 1.75rem; font-weight: 600; }
+
+        .modal-cerrar {
+            background: none;
+            border: 0;
+            padding: 0;
+            font-size: 1.5rem;
+            line-height: 1;
+            color: var(--gris-400);
+        }
+
+        .modal-cerrar:hover { color: var(--gris-600); }
+
+        .modal-cuerpo { padding: 1rem 1.5rem 1.5rem; }
+
+        .modal-cuerpo > .subtitulo { margin: 0 0 1rem; }
+
+        .seccion + .seccion { border-top: 1px solid var(--gris-100); margin-top: 1.25rem; padding-top: 1.25rem; }
+
+        .seccion h2 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gris-400);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            margin-bottom: 0.75rem;
+        }
+
+        .modal-botones { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+
+        .modal-botones .btn { flex: 1; }
+
+        /* ---------- SweetAlert2 ---------- */
+
+        .swal-panel { border-radius: 1rem !important; font-family: inherit; }
+        .swal-titulo { font-size: 1.125rem !important; font-weight: 600 !important; color: var(--gris-900) !important; }
+        .swal-texto { font-size: 0.875rem !important; color: var(--gris-600) !important; }
+        .swal-acciones { gap: 0.5rem; }
+
+        /* ---------- FullCalendar ---------- */
+
+        .fc .fc-toolbar { flex-wrap: wrap; gap: 0.5rem; }
+
+        .fc .fc-toolbar-title { font-size: 1.125rem; font-weight: 600; }
+
+        .fc .fc-event { cursor: default; }
+
+        .fc-evento-pendiente { opacity: 0.6; border-style: dashed !important; }
+
+        /* ---------- Animaciones ---------- */
+
+        @keyframes aparecer {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .contenedor, .modal { animation: none; }
+            .btn:active:not(:disabled) { transform: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Carga inicial -->
+    <div id="pantalla-carga" class="pantalla-centrada">
+        <p class="cargando">Cargando…</p>
+    </div>
+
+    <!-- Falta configurar Supabase -->
+    <div id="pantalla-configuracion" class="pantalla-centrada" hidden>
+        <div class="tarjeta tarjeta-relleno" style="max-width: 32rem">
+            <h1 class="titulo titulo-separado">Falta conectar Supabase</h1>
+            <p class="subtitulo">Edita el bloque <code>CONFIG</code> al inicio del script de este archivo con la URL del proyecto y la clave pública (Supabase › Project Settings › API) y ejecuta <code>schema.sql</code> en el SQL Editor.</p>
+        </div>
+    </div>
+
+    <!-- Login -->
+    <div id="pantalla-login" class="pantalla-centrada" hidden>
+        <div class="login">
+            <div class="login-cabecera">
+                <span class="marca-logo">VB</span>
+                <h1>Préstamo de Videobeams</h1>
+                <p>Inicia sesión con tu correo institucional para solicitar un equipo.</p>
+            </div>
+
+            <div class="tarjeta tarjeta-relleno">
+                <div id="login-error" class="aviso aviso-error" hidden></div>
+
+                <button type="button" id="boton-google" class="btn btn-primario btn-bloque">Iniciar sesión con Google</button>
+
+                <div class="separador">o</div>
+
+                <form id="formulario-login" class="pila" novalidate>
+                    <div class="campo">
+                        <label for="login-email">Correo</label>
+                        <input id="login-email" type="email" name="email" autocomplete="email" required>
+                    </div>
+                    <div class="campo">
+                        <label for="login-password">Contraseña</label>
+                        <input id="login-password" type="password" name="password" autocomplete="current-password" required>
+                    </div>
+                    <button type="submit" class="btn btn-oscuro btn-bloque">Iniciar sesión</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aplicación -->
+    <div id="pantalla-app" hidden>
+        <nav class="barra">
+            <div class="barra-interior">
+                <div class="barra-izquierda">
+                    <a href="#/disponibilidad" class="marca">
+                        <span class="marca-logo">VB</span>
+                        <span class="marca-nombre">Préstamo de Videobeams</span>
+                    </a>
+                    <div id="enlaces" class="enlaces"></div>
+                </div>
+                <div class="barra-derecha">
+                    <div class="usuario">
+                        <span id="usuario-inicial" class="avatar"></span>
+                        <span id="usuario-nombre" class="usuario-nombre"></span>
+                    </div>
+                    <button type="button" id="boton-salir" class="btn-texto">Salir</button>
+                </div>
+            </div>
+        </nav>
+
+        <main id="contenido" class="contenedor"></main>
+    </div>
+
+    <!-- Modal de solicitud (crear / editar) -->
+    <div id="modal-solicitud" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo" hidden>
+        <div class="modal-fondo" data-cerrar-modal></div>
+
+        <div class="modal-panel">
+            <div class="modal-cabecera">
+                <h1 id="modal-titulo"></h1>
+                <button type="button" class="modal-cerrar" aria-label="Cerrar" data-cerrar-modal>&times;</button>
+            </div>
+
+            <form id="formulario-solicitud" class="modal-cuerpo" novalidate>
+                <p id="modal-subtitulo" class="subtitulo"></p>
+
+                <div class="seccion">
+                    <h2>Información de la clase</h2>
+                    <div class="pila">
+                        <div class="rejilla-2">
+                            <div class="campo">
+                                <label for="solicitud-sede">Sede</label>
+                                <select id="solicitud-sede" name="sede_id"></select>
+                                <p class="error" data-error="sede_id"></p>
+                            </div>
+                            <div class="campo">
+                                <label for="solicitud-aula">Aula</label>
+                                <input id="solicitud-aula" type="text" name="aula" maxlength="255" placeholder="Ejemplo: Aula 202">
+                                <p class="error" data-error="aula"></p>
+                            </div>
+                        </div>
+                        <div class="rejilla-2">
+                            <div class="campo">
+                                <label for="solicitud-programa">Programa</label>
+                                <select id="solicitud-programa" name="programa_id"></select>
+                                <p class="error" data-error="programa_id"></p>
+                            </div>
+                            <div class="campo">
+                                <label for="solicitud-asignatura">Asignatura</label>
+                                <select id="solicitud-asignatura" name="asignatura_id"></select>
+                                <p class="error" data-error="asignatura_id"></p>
+                            </div>
+                        </div>
+                        <div class="campo">
+                            <label for="solicitud-actividad">Actividad <span class="opcional">(opcional)</span></label>
+                            <input id="solicitud-actividad" type="text" name="actividad" maxlength="255" placeholder="Describa brevemente la actividad">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="seccion">
+                    <h2>Fecha, horario y equipo</h2>
+                    <div class="pila">
+                        <div class="rejilla-2">
+                            <div class="campo">
+                                <label for="solicitud-fecha">Fecha de la clase</label>
+                                <input id="solicitud-fecha" type="date" name="fecha">
+                                <p class="error" data-error="fecha"></p>
+                            </div>
+                            <div class="campo">
+                                <label for="solicitud-equipo">Videobeam</label>
+                                <select id="solicitud-equipo" name="equipo_id"></select>
+                                <p class="error" data-error="equipo_id"></p>
+                            </div>
+                        </div>
+                        <div class="rejilla-2">
+                            <div class="campo">
+                                <label for="solicitud-inicio">Hora de inicio</label>
+                                <input id="solicitud-inicio" type="time" name="hora_inicio">
+                                <p class="error" data-error="hora_inicio"></p>
+                            </div>
+                            <div class="campo">
+                                <label for="solicitud-fin">Hora de finalización</label>
+                                <input id="solicitud-fin" type="time" name="hora_fin">
+                                <p class="error" data-error="hora_fin"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="seccion">
+                    <h2>Evidencia y observaciones</h2>
+                    <div class="pila">
+                        <div class="campo">
+                            <label for="solicitud-evidencia">Imagen de evidencia <span class="opcional">(opcional)</span></label>
+                            <input id="solicitud-evidencia" type="file" name="evidencia" accept="image/*">
+                            <p id="evidencia-actual" class="ayuda" hidden>Esta solicitud ya tiene una evidencia. Sube otra imagen solo si quieres reemplazarla.</p>
+                            <p class="error" data-error="evidencia"></p>
+                        </div>
+                        <div class="campo">
+                            <label for="solicitud-observaciones">Observaciones <span class="opcional">(opcional)</span></label>
+                            <textarea id="solicitud-observaciones" name="observaciones" rows="3" maxlength="1000"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-botones">
+                    <button type="button" class="btn btn-secundario" data-cerrar-modal>Cancelar</button>
+                    <button type="submit" id="modal-enviar" class="btn btn-primario"></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.21/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.21/locales/es.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        /**
+         * Datos del proyecto en Supabase › Project Settings › API.
+         * La clave pública (anon / publishable) puede estar aquí: la seguridad
+         * la imponen las políticas RLS y funciones de schema.sql.
+         */
+        const CONFIG = {
+            supabaseUrl: 'https://TU-PROYECTO.supabase.co',
+            supabaseKey: 'TU-CLAVE-PUBLICA',
+        };
+
+        const POR_PAGINA_MIAS = 10;
+        const POR_PAGINA_ADMIN = 15;
+        const TAMANO_MAXIMO_EVIDENCIA = 4 * 1024 * 1024;
+        const ESTADOS = ['pendiente', 'confirmada', 'cancelada', 'rechazada'];
+        const COLORES_EQUIPOS = ['#2563eb', '#dc2626', '#059669', '#d97706', '#7c3aed', '#db2777', '#0891b2', '#65a30d'];
+
+        const CATALOGOS = {
+            sedes: { titulo: 'Sedes', vacio: 'Sin sedes registradas.' },
+            programas: { titulo: 'Programas', vacio: 'Sin programas registrados.' },
+            asignaturas: { titulo: 'Asignaturas', vacio: 'Sin asignaturas registradas.' },
+        };
+
+        const estaConfigurado = !CONFIG.supabaseUrl.includes('TU-PROYECTO') && !CONFIG.supabaseKey.includes('TU-CLAVE');
+
+        // Se lee antes de crear el cliente: Supabase devuelve aquí el rechazo
+        // del trigger de dominio cuando alguien entra con una cuenta no institucional.
+        const errorDeRedireccion = leerErrorDeRedireccion();
+
+        const db = estaConfigurado
+            ? supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseKey, { auth: { flowType: 'pkce' } })
+            : null;
+
+        const estado = {
+            usuario: null,
+            perfil: null,
+            errorLogin: errorDeRedireccion,
+            config: { dominio_institucional: 'unipaz.edu.co', dias_anticipacion: 1, zona_horaria: 'America/Bogota' },
+            catalogos: { sedes: [], programas: [], asignaturas: [], equipos: [] },
+            calendario: null,
+            paginas: { mias: 1, admin: 1 },
+            filtros: { sede_id: '', equipo_id: '', fecha: '', estado: '' },
+            solicitudEditando: null,
+        };
+
+        // -------------------------------------------------------------------
+        // Utilidades
+        // -------------------------------------------------------------------
+
+        const $ = (selector, raiz = document) => raiz.querySelector(selector);
+
+        const esc = (valor) => String(valor ?? '').replace(/[&<>"']/g, (caracter) => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+        })[caracter]);
+
+        const capitalizar = (texto) => texto.charAt(0).toUpperCase() + texto.slice(1);
+
+        const formatoFecha = (fechaIso) => fechaIso.split('-').reverse().join('/');
+
+        const formatoHora = (hora) => (hora ?? '').slice(0, 5);
+
+        /** Fecha de hoy (YYYY-MM-DD) en la zona horaria de la institución. */
+        const hoy = () => new Intl.DateTimeFormat('en-CA', { timeZone: estado.config.zona_horaria }).format(new Date());
+
+        function sumarDias(fechaIso, dias) {
+            const fecha = new Date(`${fechaIso}T00:00:00Z`);
+            fecha.setUTCDate(fecha.getUTCDate() + dias);
+
+            return fecha.toISOString().slice(0, 10);
+        }
+
+        const fechaMinima = () => sumarDias(hoy(), estado.config.dias_anticipacion);
+
+        const opcionesHtml = (lista, etiqueta, seleccionado) => lista
+            .map((item) => `<option value="${item.id}" ${String(item.id) === String(seleccionado) ? 'selected' : ''}>${esc(etiqueta(item))}</option>`)
+            .join('');
+
+        const etiquetaEquipo = (equipo) => (equipo.nombre ? `${equipo.codigo} - ${equipo.nombre}` : equipo.codigo);
+
+        function leerErrorDeRedireccion() {
+            const consulta = new URLSearchParams(location.search);
+            const fragmento = new URLSearchParams(location.hash.replace(/^#/, ''));
+            const descripcion = consulta.get('error_description') ?? fragmento.get('error_description');
+
+            if (descripcion) {
+                history.replaceState(null, '', location.pathname);
+            }
+
+            return descripcion;
+        }
+
+        function mensajeDeError(error) {
+            const mensaje = error?.message ?? '';
+
+            if (error?.code === '23505') {
+                return 'Ya existe un registro con ese valor.';
+            }
+
+            if (error?.code === '23514') {
+                return 'Revisa los datos ingresados.';
+            }
+
+            if (/row-level security|permission denied|JWT/i.test(mensaje)) {
+                return 'No tienes permiso para realizar esta acción.';
+            }
+
+            if (error?.code === 'P0001' || error?.code === '42501') {
+                return mensaje;
+            }
+
+            console.error(error);
+
+            return 'Ocurrió un error inesperado. Intenta de nuevo.';
+        }
+
+        const alerta = Swal.mixin({
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-panel',
+                title: 'swal-titulo',
+                htmlContainer: 'swal-texto',
+                confirmButton: 'btn btn-primario',
+                cancelButton: 'btn btn-secundario',
+                actions: 'swal-acciones',
+            },
+        });
+
+        const notificarExito = (mensaje) => alerta.fire({ title: mensaje, icon: 'success', timer: 2500, showConfirmButton: false });
+
+        const notificarError = (mensaje) => alerta.fire({ title: mensaje, icon: 'error', confirmButtonText: 'Entendido' });
+
+        async function confirmar({ titulo, texto, confirmarTexto, cancelarTexto }) {
+            const resultado = await alerta.fire({
+                title: titulo,
+                text: texto,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: confirmarTexto,
+                cancelButtonText: cancelarTexto,
+                reverseButtons: true,
+                focusCancel: true,
+            });
+
+            return resultado.isConfirmed;
+        }
+
+        function mostrarErrores(formulario, errores) {
+            for (const [campo, mensaje] of Object.entries(errores)) {
+                const destino = $(`[data-error="${campo}"]`, formulario);
+
+                if (destino) {
+                    destino.textContent = mensaje;
+                }
+            }
+        }
+
+        function limpiarErrores(formulario) {
+            formulario.querySelectorAll('[data-error]').forEach((elemento) => {
+                elemento.textContent = '';
+            });
+        }
+
+        const filaMensaje = (columnas, mensaje) => `<tr><td colspan="${columnas}" class="vacio">${esc(mensaje)}</td></tr>`;
+
+        function pintarPaginacion(contenedor, pagina, total, porPagina, alCambiar) {
+            const paginas = Math.ceil((total ?? 0) / porPagina);
+
+            if (paginas <= 1) {
+                contenedor.innerHTML = '';
+
+                return;
+            }
+
+            contenedor.innerHTML = `
+                <div class="paginacion">
+                    <span>Página ${pagina} de ${paginas} · ${total} resultados</span>
+                    <div>
+                        <button type="button" class="btn btn-secundario btn-chico" data-pagina="${pagina - 1}" ${pagina <= 1 ? 'disabled' : ''}>Anterior</button>
+                        <button type="button" class="btn btn-secundario btn-chico" data-pagina="${pagina + 1}" ${pagina >= paginas ? 'disabled' : ''}>Siguiente</button>
+                    </div>
+                </div>`;
+
+            contenedor.querySelectorAll('[data-pagina]').forEach((boton) => {
+                boton.addEventListener('click', () => alCambiar(Number(boton.dataset.pagina)));
+            });
+        }
+
+        // -------------------------------------------------------------------
+        // Pantallas y sesión
+        // -------------------------------------------------------------------
+
+        function mostrarPantalla(nombre) {
+            for (const pantalla of ['carga', 'configuracion', 'login', 'app']) {
+                $(`#pantalla-${pantalla}`).hidden = pantalla !== nombre;
+            }
+        }
+
+        function traducirErrorDeLogin(descripcion) {
+            if (/database error saving new user|correos institucionales/i.test(descripcion)) {
+                return `Debes iniciar sesión con tu correo institucional @${estado.config.dominio_institucional}`;
+            }
+
+            if (/invalid login credentials/i.test(descripcion)) {
+                return 'Credenciales incorrectas.';
+            }
+
+            if (/email not confirmed/i.test(descripcion)) {
+                return 'Debes confirmar tu correo antes de iniciar sesión.';
+            }
+
+            return descripcion;
+        }
+
+        function mostrarLogin() {
+            estado.calendario?.destroy();
+            estado.calendario = null;
+            cerrarModalSolicitud();
+
+            const aviso = $('#login-error');
+            aviso.hidden = !estado.errorLogin;
+            aviso.textContent = estado.errorLogin ? traducirErrorDeLogin(estado.errorLogin) : '';
+
+            mostrarPantalla('login');
+        }
+
+        async function cargarConfiguracion() {
+            const { data } = await db
+                .from('configuracion')
+                .select('dominio_institucional, dias_anticipacion, zona_horaria')
+                .maybeSingle();
+
+            if (data) {
+                Object.assign(estado.config, data);
+            }
+        }
+
+        async function recargarCatalogos() {
+            const [sedes, programas, asignaturas, equipos] = await Promise.all([
+                db.from('sedes').select('id, nombre, activo').order('nombre'),
+                db.from('programas').select('id, nombre, activo').order('nombre'),
+                db.from('asignaturas').select('id, nombre, activo').order('nombre'),
+                db.from('equipos').select('id, codigo, nombre, activo, sede_id, sede:sedes(nombre)').order('codigo'),
+            ]);
+
+            estado.catalogos = {
+                sedes: sedes.data ?? [],
+                programas: programas.data ?? [],
+                asignaturas: asignaturas.data ?? [],
+                equipos: equipos.data ?? [],
+            };
+        }
+
+        async function manejarSesion(sesion) {
+            if (!sesion) {
+                estado.usuario = null;
+                estado.perfil = null;
+                mostrarLogin();
+
+                return;
+            }
+
+            if (estado.usuario?.id === sesion.user.id) {
+                return;
+            }
+
+            estado.usuario = sesion.user;
+
+            const { data: perfil, error } = await db
+                .from('perfiles')
+                .select('id, nombre, email, es_admin')
+                .eq('id', sesion.user.id)
+                .maybeSingle();
+
+            if (error || !perfil) {
+                estado.errorLogin = error
+                    ? mensajeDeError(error)
+                    : `Debes iniciar sesión con tu correo institucional @${estado.config.dominio_institucional}`;
+                estado.usuario = null;
+                await db.auth.signOut();
+                mostrarLogin();
+
+                return;
+            }
+
+            estado.perfil = perfil;
+            estado.errorLogin = null;
+            await recargarCatalogos();
+
+            if (location.search) {
+                history.replaceState(null, '', location.pathname + location.hash);
+            }
+
+            mostrarApp();
+        }
+
+        function mostrarApp() {
+            $('#usuario-nombre').textContent = estado.perfil.nombre;
+            $('#usuario-inicial').textContent = estado.perfil.nombre.charAt(0).toUpperCase();
+
+            const enlace = (ruta, texto) => `<a href="${ruta}" class="enlace" data-ruta="${ruta}">${texto}</a>`;
+
+            $('#enlaces').innerHTML = [
+                enlace('#/disponibilidad', 'Disponibilidad'),
+                enlace('#/mis-solicitudes', 'Mis solicitudes'),
+                ...(estado.perfil.es_admin
+                    ? [
+                        '<span class="enlaces-divisor"></span>',
+                        enlace('#/admin/solicitudes', 'Solicitudes'),
+                        enlace('#/admin/sedes', 'Sedes'),
+                        enlace('#/admin/programas', 'Programas'),
+                        enlace('#/admin/asignaturas', 'Asignaturas'),
+                        enlace('#/admin/equipos', 'Equipos'),
+                    ]
+                    : []),
+            ].join('');
+
+            mostrarPantalla('app');
+            navegar();
+        }
+
+        // -------------------------------------------------------------------
+        // Navegación
+        // -------------------------------------------------------------------
+
+        const RUTAS = {
+            '#/disponibilidad': { vista: vistaDisponibilidad },
+            '#/mis-solicitudes': { vista: vistaMisSolicitudes },
+            '#/admin/solicitudes': { vista: vistaAdminSolicitudes, admin: true },
+            '#/admin/sedes': { vista: (contenido) => vistaCatalogo(contenido, 'sedes'), admin: true },
+            '#/admin/programas': { vista: (contenido) => vistaCatalogo(contenido, 'programas'), admin: true },
+            '#/admin/asignaturas': { vista: (contenido) => vistaCatalogo(contenido, 'asignaturas'), admin: true },
+            '#/admin/equipos': { vista: vistaEquipos, admin: true },
+        };
+
+        function navegar() {
+            if (!estado.perfil) {
+                return;
+            }
+
+            const permitida = RUTAS[location.hash] && (!RUTAS[location.hash].admin || estado.perfil.es_admin);
+            const ruta = permitida ? location.hash : '#/disponibilidad';
+
+            if (location.hash !== ruta) {
+                history.replaceState(null, '', ruta);
+            }
+
+            document.querySelectorAll('[data-ruta]').forEach((enlace) => {
+                enlace.classList.toggle('activo', enlace.dataset.ruta === ruta);
+            });
+
+            estado.calendario?.destroy();
+            estado.calendario = null;
+
+            const contenido = $('#contenido');
+            contenido.style.animation = 'none';
+            void contenido.offsetHeight;
+            contenido.style.animation = '';
+
+            RUTAS[ruta].vista(contenido);
+        }
+
+        /** Tras guardar o cancelar: refresca el calendario sin perder la semana, o redibuja la vista. */
+        function refrescarVista() {
+            if (estado.calendario) {
+                estado.calendario.refetchEvents();
+
+                return;
+            }
+
+            navegar();
+        }
+
+        // -------------------------------------------------------------------
+        // Vista: Disponibilidad
+        // -------------------------------------------------------------------
+
+        function vistaDisponibilidad(contenido) {
+            contenido.innerHTML = `
+                <div class="encabezado">
+                    <div>
+                        <h1 class="titulo">Disponibilidad de videobeams</h1>
+                        <p class="subtitulo">Selecciona un horario disponible en el calendario o crea una solicitud directamente.</p>
+                    </div>
+                    <button type="button" class="btn btn-primario" data-accion="crear">+ Crear solicitud</button>
+                </div>
+                <div class="tarjeta tarjeta-calendario"><div data-ref="calendario"></div></div>`;
+
+            $('[data-accion="crear"]', contenido).addEventListener('click', () => abrirModalSolicitud());
+
+            estado.calendario = new FullCalendar.Calendar($('[data-ref="calendario"]', contenido), {
+                initialView: window.matchMedia('(max-width: 640px)').matches ? 'timeGridDay' : 'timeGridWeek',
+                locale: 'es',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay',
+                },
+                height: 'auto',
+                slotMinTime: '06:00:00',
+                slotMaxTime: '22:00:00',
+                selectable: true,
+                selectMirror: true,
+                selectOverlap: false,
+                eventOverlap: false,
+                events: async (info) => {
+                    const { data, error } = await db.rpc('eventos_calendario', {
+                        p_inicio: info.startStr.slice(0, 10),
+                        p_fin: info.endStr.slice(0, 10),
+                    });
+
+                    if (error) {
+                        notificarError(mensajeDeError(error));
+
+                        throw error;
+                    }
+
+                    return data.map((evento) => {
+                        const esPendiente = evento.estado === 'pendiente';
+
+                        return {
+                            title: `${evento.equipo} - ${evento.asignatura}${esPendiente ? ' (pendiente)' : ''}`,
+                            start: `${evento.fecha}T${evento.hora_inicio}`,
+                            end: `${evento.fecha}T${evento.hora_fin}`,
+                            color: COLORES_EQUIPOS[evento.equipo_id % COLORES_EQUIPOS.length],
+                            classNames: esPendiente ? ['fc-evento-pendiente'] : [],
+                            extendedProps: evento,
+                        };
+                    });
+                },
+                eventDidMount: (info) => {
+                    const { docente, equipo, asignatura, estado: estadoEvento } = info.event.extendedProps;
+                    const estadoTexto = estadoEvento === 'pendiente' ? ' (pendiente de confirmación)' : '';
+                    info.el.title = `${equipo} · ${asignatura}${estadoTexto}\nSolicitado por: ${docente}`;
+                },
+                select: (info) => {
+                    abrirModalSolicitud({
+                        fecha: info.startStr.slice(0, 10),
+                        horaInicio: info.startStr.slice(11, 16),
+                        horaFin: info.endStr.slice(11, 16),
+                    });
+
+                    estado.calendario.unselect();
+                },
+            });
+
+            estado.calendario.render();
+        }
+
+        // -------------------------------------------------------------------
+        // Vista: Mis solicitudes
+        // -------------------------------------------------------------------
+
+        function vistaMisSolicitudes(contenido) {
+            contenido.innerHTML = `
+                <h1 class="titulo titulo-separado">Mis solicitudes</h1>
+                <div class="tarjeta tabla-contenedor">
+                    <table class="tabla">
+                        <thead>
+                            <tr><th>Fecha</th><th>Horario</th><th>Sede</th><th>Equipo</th><th>Asignatura</th><th>Estado</th><th></th></tr>
+                        </thead>
+                        <tbody data-ref="filas">${filaMensaje(7, 'Cargando…')}</tbody>
+                    </table>
+                </div>
+                <div data-ref="paginacion"></div>`;
+
+            const filas = $('[data-ref="filas"]', contenido);
+            const paginacion = $('[data-ref="paginacion"]', contenido);
+            const recargar = () => cargarMisSolicitudes(filas, paginacion);
+
+            filas.addEventListener('click', async (evento) => {
+                const boton = evento.target.closest('[data-accion]');
+
+                if (!boton) {
+                    return;
+                }
+
+                const id = Number(boton.dataset.id);
+
+                if (boton.dataset.accion === 'editar') {
+                    editarSolicitud(id);
+
+                    return;
+                }
+
+                const confirmado = await confirmar({
+                    titulo: '¿Cancelar esta solicitud?',
+                    texto: 'Esta acción liberará el horario para que otro docente pueda reservarlo.',
+                    confirmarTexto: 'Sí, cancelar',
+                    cancelarTexto: 'Volver',
+                });
+
+                if (!confirmado) {
+                    return;
+                }
+
+                const { error } = await db.rpc('cancelar_solicitud', { p_id: id });
+
+                if (error) {
+                    notificarError(mensajeDeError(error));
+
+                    return;
+                }
+
+                notificarExito('La solicitud fue cancelada correctamente.');
+                recargar();
+            });
+
+            recargar();
+        }
+
+        async function cargarMisSolicitudes(filas, paginacion) {
+            const pagina = estado.paginas.mias;
+            const desde = (pagina - 1) * POR_PAGINA_MIAS;
+
+            const { data, count, error } = await db
+                .from('solicitudes')
+                .select('id, fecha, hora_inicio, hora_fin, estado, sede:sedes(nombre), equipo:equipos(codigo), asignatura:asignaturas(nombre)', { count: 'exact' })
+                .eq('user_id', estado.perfil.id)
+                .order('fecha', { ascending: false })
+                .order('hora_inicio', { ascending: false })
+                .range(desde, desde + POR_PAGINA_MIAS - 1);
+
+            if (error) {
+                filas.innerHTML = filaMensaje(7, mensajeDeError(error));
+
+                return;
+            }
+
+            if (!data.length) {
+                filas.innerHTML = `
+                    <tr><td colspan="7" class="vacio">
+                        <p>Aún no tienes solicitudes.</p>
+                        <a href="#/disponibilidad">Crear tu primera solicitud</a>
+                    </td></tr>`;
+            } else {
+                const fechaHoy = hoy();
+
+                filas.innerHTML = data.map((solicitud) => {
+                    const editable = solicitud.estado === 'confirmada' && solicitud.fecha > fechaHoy;
+
+                    return `
+                        <tr>
+                            <td class="fuerte">${formatoFecha(solicitud.fecha)}</td>
+                            <td>${formatoHora(solicitud.hora_inicio)} - ${formatoHora(solicitud.hora_fin)}</td>
+                            <td>${esc(solicitud.sede?.nombre)}</td>
+                            <td><span class="insignia">${esc(solicitud.equipo?.codigo)}</span></td>
+                            <td>${esc(solicitud.asignatura?.nombre)}</td>
+                            <td><span class="insignia estado-${esc(solicitud.estado)}">${esc(capitalizar(solicitud.estado))}</span></td>
+                            <td class="acciones">
+                                ${editable ? `
+                                    <button type="button" class="btn-texto marca-color" data-accion="editar" data-id="${solicitud.id}">Editar</button>
+                                    <button type="button" class="btn-texto peligro" data-accion="cancelar" data-id="${solicitud.id}">Cancelar</button>
+                                ` : ''}
+                            </td>
+                        </tr>`;
+                }).join('');
+            }
+
+            pintarPaginacion(paginacion, pagina, count, POR_PAGINA_MIAS, (nuevaPagina) => {
+                estado.paginas.mias = nuevaPagina;
+                cargarMisSolicitudes(filas, paginacion);
+            });
+        }
+
+        // -------------------------------------------------------------------
+        // Vista: Admin › Solicitudes
+        // -------------------------------------------------------------------
+
+        function vistaAdminSolicitudes(contenido) {
+            const { filtros, catalogos } = estado;
+
+            contenido.innerHTML = `
+                <h1 class="titulo titulo-separado">Solicitudes</h1>
+
+                <div class="tarjeta filtros" data-ref="filtros">
+                    <div class="campo">
+                        <label for="filtro-sede">Sede</label>
+                        <select id="filtro-sede" name="sede_id">
+                            <option value="">Todas</option>
+                            ${opcionesHtml(catalogos.sedes, (sede) => sede.nombre, filtros.sede_id)}
+                        </select>
+                    </div>
+                    <div class="campo">
+                        <label for="filtro-equipo">Equipo</label>
+                        <select id="filtro-equipo" name="equipo_id">
+                            <option value="">Todos</option>
+                            ${opcionesHtml(catalogos.equipos, (equipo) => equipo.codigo, filtros.equipo_id)}
+                        </select>
+                    </div>
+                    <div class="campo">
+                        <label for="filtro-fecha">Fecha</label>
+                        <input id="filtro-fecha" type="date" name="fecha" value="${esc(filtros.fecha)}">
+                    </div>
+                    <div class="campo">
+                        <label for="filtro-estado">Estado</label>
+                        <select id="filtro-estado" name="estado">
+                            <option value="">Todos</option>
+                            ${ESTADOS.map((opcion) => `<option value="${opcion}" ${opcion === filtros.estado ? 'selected' : ''}>${capitalizar(opcion)}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="tarjeta tabla-contenedor">
+                    <table class="tabla">
+                        <thead>
+                            <tr><th>Fecha</th><th>Horario</th><th>Docente</th><th>Sede</th><th>Equipo</th><th>Asignatura</th><th>Estado</th><th></th></tr>
+                        </thead>
+                        <tbody data-ref="filas">${filaMensaje(8, 'Cargando…')}</tbody>
+                    </table>
+                </div>
+                <div data-ref="paginacion"></div>`;
+
+            const filas = $('[data-ref="filas"]', contenido);
+            const paginacion = $('[data-ref="paginacion"]', contenido);
+            const recargar = () => cargarSolicitudesAdmin(filas, paginacion);
+
+            $('[data-ref="filtros"]', contenido).addEventListener('change', (evento) => {
+                estado.filtros[evento.target.name] = evento.target.value;
+                estado.paginas.admin = 1;
+                recargar();
+            });
+
+            filas.addEventListener('change', async (evento) => {
+                const select = evento.target.closest('[data-estado-de]');
+
+                if (!select) {
+                    return;
+                }
+
+                const { error } = await db.rpc('cambiar_estado_solicitud', {
+                    p_id: Number(select.dataset.estadoDe),
+                    p_estado: select.value,
+                });
+
+                if (error) {
+                    notificarError(mensajeDeError(error));
+                } else {
+                    notificarExito('El estado de la solicitud fue actualizado.');
+                }
+
+                recargar();
+            });
+
+            filas.addEventListener('click', async (evento) => {
+                const boton = evento.target.closest('[data-accion]');
+
+                if (!boton) {
+                    return;
+                }
+
+                if (boton.dataset.accion === 'editar') {
+                    editarSolicitud(Number(boton.dataset.id));
+
+                    return;
+                }
+
+                // Se abre la pestaña antes de la petición para que el navegador no la bloquee.
+                const ventana = window.open('about:blank', '_blank');
+                const { data, error } = await db.storage.from('evidencias').createSignedUrl(boton.dataset.evidencia, 300);
+
+                if (error) {
+                    ventana?.close();
+                    notificarError(mensajeDeError(error));
+
+                    return;
+                }
+
+                if (ventana) {
+                    ventana.location.href = data.signedUrl;
+                }
+            });
+
+            recargar();
+        }
+
+        async function cargarSolicitudesAdmin(filas, paginacion) {
+            const { filtros } = estado;
+            const pagina = estado.paginas.admin;
+            const desde = (pagina - 1) * POR_PAGINA_ADMIN;
+
+            let consulta = db
+                .from('solicitudes')
+                .select('id, fecha, hora_inicio, hora_fin, estado, evidencia_path, docente:perfiles(nombre), sede:sedes(nombre), equipo:equipos(codigo), asignatura:asignaturas(nombre)', { count: 'exact' });
+
+            for (const campo of ['sede_id', 'equipo_id', 'fecha', 'estado']) {
+                if (filtros[campo]) {
+                    consulta = consulta.eq(campo, filtros[campo]);
+                }
+            }
+
+            const { data, count, error } = await consulta
+                .order('fecha', { ascending: false })
+                .order('hora_inicio', { ascending: false })
+                .range(desde, desde + POR_PAGINA_ADMIN - 1);
+
+            if (error) {
+                filas.innerHTML = filaMensaje(8, mensajeDeError(error));
+
+                return;
+            }
+
+            filas.innerHTML = data.length
+                ? data.map((solicitud) => `
+                    <tr>
+                        <td class="fuerte">${formatoFecha(solicitud.fecha)}</td>
+                        <td>${formatoHora(solicitud.hora_inicio)} - ${formatoHora(solicitud.hora_fin)}</td>
+                        <td>${esc(solicitud.docente?.nombre)}</td>
+                        <td>${esc(solicitud.sede?.nombre)}</td>
+                        <td><span class="insignia">${esc(solicitud.equipo?.codigo)}</span></td>
+                        <td>${esc(solicitud.asignatura?.nombre)}</td>
+                        <td>
+                            <select class="select-estado estado-${esc(solicitud.estado)}" data-estado-de="${solicitud.id}" aria-label="Estado">
+                                ${ESTADOS.map((opcion) => `<option value="${opcion}" ${opcion === solicitud.estado ? 'selected' : ''}>${capitalizar(opcion)}</option>`).join('')}
+                            </select>
+                        </td>
+                        <td class="acciones">
+                            ${solicitud.evidencia_path ? `<button type="button" class="btn-texto" data-accion="evidencia" data-evidencia="${esc(solicitud.evidencia_path)}">Evidencia</button>` : ''}
+                            <button type="button" class="btn-texto marca-color" data-accion="editar" data-id="${solicitud.id}">Editar</button>
+                        </td>
+                    </tr>`).join('')
+                : filaMensaje(8, 'No hay solicitudes con estos filtros.');
+
+            pintarPaginacion(paginacion, pagina, count, POR_PAGINA_ADMIN, (nuevaPagina) => {
+                estado.paginas.admin = nuevaPagina;
+                cargarSolicitudesAdmin(filas, paginacion);
+            });
+        }
+
+        // -------------------------------------------------------------------
+        // Vista: Admin › Sedes, Programas y Asignaturas
+        // -------------------------------------------------------------------
+
+        function vistaCatalogo(contenido, tabla) {
+            const { titulo, vacio } = CATALOGOS[tabla];
+            let editandoId = null;
+
+            contenido.innerHTML = `
+                <h1 class="titulo titulo-separado">${titulo}</h1>
+
+                <form class="tarjeta formulario-linea" data-ref="formulario" novalidate>
+                    <div class="campo campo-crece">
+                        <label for="catalogo-nombre">Nombre</label>
+                        <input id="catalogo-nombre" type="text" name="nombre" maxlength="255">
+                        <p class="error" data-error="nombre"></p>
+                    </div>
+                    <div class="botones">
+                        <button type="submit" class="btn btn-primario" data-ref="enviar">Crear</button>
+                        <button type="button" class="btn-texto" data-ref="cancelar" hidden>Cancelar</button>
+                    </div>
+                </form>
+
+                <div class="tarjeta tabla-contenedor">
+                    <table class="tabla">
+                        <thead><tr><th>Nombre</th><th>Estado</th><th></th></tr></thead>
+                        <tbody data-ref="filas"></tbody>
+                    </table>
+                </div>`;
+
+            const formulario = $('[data-ref="formulario"]', contenido);
+            const filas = $('[data-ref="filas"]', contenido);
+
+            const pintarFilas = () => {
+                const registros = estado.catalogos[tabla];
+
+                filas.innerHTML = registros.length
+                    ? registros.map((registro) => `
+                        <tr>
+                            <td class="fuerte">${esc(registro.nombre)}</td>
+                            <td><span class="insignia estado-${registro.activo ? 'activo' : 'inactivo'}">${registro.activo ? 'Activo' : 'Inactivo'}</span></td>
+                            <td class="acciones">
+                                <button type="button" class="btn-texto marca-color" data-accion="editar" data-id="${registro.id}">Editar</button>
+                                <button type="button" class="btn-texto" data-accion="alternar" data-id="${registro.id}">${registro.activo ? 'Desactivar' : 'Activar'}</button>
+                            </td>
+                        </tr>`).join('')
+                    : filaMensaje(3, vacio);
+            };
+
+            const reiniciarFormulario = () => {
+                editandoId = null;
+                formulario.reset();
+                limpiarErrores(formulario);
+                $('[data-ref="enviar"]', formulario).textContent = 'Crear';
+                $('[data-ref="cancelar"]', formulario).hidden = true;
+            };
+
+            formulario.addEventListener('submit', async (evento) => {
+                evento.preventDefault();
+                limpiarErrores(formulario);
+
+                const nombre = formulario.elements.nombre.value.trim();
+
+                if (!nombre) {
+                    mostrarErrores(formulario, { nombre: 'El nombre es obligatorio.' });
+
+                    return;
+                }
+
+                const { error } = editandoId
+                    ? await db.from(tabla).update({ nombre }).eq('id', editandoId)
+                    : await db.from(tabla).insert({ nombre });
+
+                if (error) {
+                    mostrarErrores(formulario, { nombre: mensajeDeError(error) });
+
+                    return;
+                }
+
+                reiniciarFormulario();
+                await recargarCatalogos();
+                pintarFilas();
+            });
+
+            $('[data-ref="cancelar"]', formulario).addEventListener('click', reiniciarFormulario);
+
+            filas.addEventListener('click', async (evento) => {
+                const boton = evento.target.closest('[data-accion]');
+
+                if (!boton) {
+                    return;
+                }
+
+                const registro = estado.catalogos[tabla].find((item) => item.id === Number(boton.dataset.id));
+
+                if (boton.dataset.accion === 'editar') {
+                    editandoId = registro.id;
+                    formulario.elements.nombre.value = registro.nombre;
+                    $('[data-ref="enviar"]', formulario).textContent = 'Actualizar';
+                    $('[data-ref="cancelar"]', formulario).hidden = false;
+                    formulario.elements.nombre.focus();
+
+                    return;
+                }
+
+                const { error } = await db.from(tabla).update({ activo: !registro.activo }).eq('id', registro.id);
+
+                if (error) {
+                    notificarError(mensajeDeError(error));
+
+                    return;
+                }
+
+                await recargarCatalogos();
+                pintarFilas();
+            });
+
+            pintarFilas();
+        }
+
+        // -------------------------------------------------------------------
+        // Vista: Admin › Equipos
+        // -------------------------------------------------------------------
+
+        function vistaEquipos(contenido) {
+            let editandoId = null;
+
+            contenido.innerHTML = `
+                <h1 class="titulo titulo-separado">Equipos (Videobeams)</h1>
+
+                <form class="tarjeta formulario-linea" data-ref="formulario" novalidate>
+                    <div class="campo">
+                        <label for="equipo-codigo">Código</label>
+                        <input id="equipo-codigo" type="text" name="codigo" maxlength="50">
+                        <p class="error" data-error="codigo"></p>
+                    </div>
+                    <div class="campo campo-crece">
+                        <label for="equipo-nombre">Nombre <span class="opcional">(opcional)</span></label>
+                        <input id="equipo-nombre" type="text" name="nombre" maxlength="255">
+                    </div>
+                    <div class="campo">
+                        <label for="equipo-sede">Sede</label>
+                        <select id="equipo-sede" name="sede_id" data-ref="sedes"></select>
+                    </div>
+                    <div class="botones">
+                        <button type="submit" class="btn btn-primario" data-ref="enviar">Crear</button>
+                        <button type="button" class="btn-texto" data-ref="cancelar" hidden>Cancelar</button>
+                    </div>
+                </form>
+
+                <div class="tarjeta tabla-contenedor">
+                    <table class="tabla">
+                        <thead><tr><th>Código</th><th>Nombre</th><th>Sede</th><th>Estado</th><th></th></tr></thead>
+                        <tbody data-ref="filas"></tbody>
+                    </table>
+                </div>`;
+
+            const formulario = $('[data-ref="formulario"]', contenido);
+            const filas = $('[data-ref="filas"]', contenido);
+
+            $('[data-ref="sedes"]', formulario).innerHTML = `<option value="">Sin sede fija</option>${opcionesHtml(estado.catalogos.sedes, (sede) => sede.nombre)}`;
+
+            const pintarFilas = () => {
+                const equipos = estado.catalogos.equipos;
+
+                filas.innerHTML = equipos.length
+                    ? equipos.map((equipo) => `
+                        <tr>
+                            <td><span class="insignia">${esc(equipo.codigo)}</span></td>
+                            <td>${esc(equipo.nombre ?? '-')}</td>
+                            <td>${esc(equipo.sede?.nombre ?? '-')}</td>
+                            <td><span class="insignia estado-${equipo.activo ? 'activo' : 'inactivo'}">${equipo.activo ? 'Activo' : 'Inactivo'}</span></td>
+                            <td class="acciones">
+                                <button type="button" class="btn-texto marca-color" data-accion="editar" data-id="${equipo.id}">Editar</button>
+                                <button type="button" class="btn-texto" data-accion="alternar" data-id="${equipo.id}">${equipo.activo ? 'Desactivar' : 'Activar'}</button>
+                            </td>
+                        </tr>`).join('')
+                    : filaMensaje(5, 'Sin equipos registrados.');
+            };
+
+            const reiniciarFormulario = () => {
+                editandoId = null;
+                formulario.reset();
+                limpiarErrores(formulario);
+                $('[data-ref="enviar"]', formulario).textContent = 'Crear';
+                $('[data-ref="cancelar"]', formulario).hidden = true;
+            };
+
+            formulario.addEventListener('submit', async (evento) => {
+                evento.preventDefault();
+                limpiarErrores(formulario);
+
+                const datos = {
+                    codigo: formulario.elements.codigo.value.trim(),
+                    nombre: formulario.elements.nombre.value.trim() || null,
+                    sede_id: Number(formulario.elements.sede_id.value) || null,
+                };
+
+                if (!datos.codigo) {
+                    mostrarErrores(formulario, { codigo: 'El código es obligatorio.' });
+
+                    return;
+                }
+
+                const { error } = editandoId
+                    ? await db.from('equipos').update(datos).eq('id', editandoId)
+                    : await db.from('equipos').insert(datos);
+
+                if (error) {
+                    mostrarErrores(formulario, {
+                        codigo: error.code === '23505' ? 'Ya existe un equipo con ese código.' : mensajeDeError(error),
+                    });
+
+                    return;
+                }
+
+                reiniciarFormulario();
+                await recargarCatalogos();
+                pintarFilas();
+            });
+
+            $('[data-ref="cancelar"]', formulario).addEventListener('click', reiniciarFormulario);
+
+            filas.addEventListener('click', async (evento) => {
+                const boton = evento.target.closest('[data-accion]');
+
+                if (!boton) {
+                    return;
+                }
+
+                const equipo = estado.catalogos.equipos.find((item) => item.id === Number(boton.dataset.id));
+
+                if (boton.dataset.accion === 'editar') {
+                    editandoId = equipo.id;
+                    formulario.elements.codigo.value = equipo.codigo;
+                    formulario.elements.nombre.value = equipo.nombre ?? '';
+                    formulario.elements.sede_id.value = equipo.sede_id ?? '';
+                    $('[data-ref="enviar"]', formulario).textContent = 'Actualizar';
+                    $('[data-ref="cancelar"]', formulario).hidden = false;
+                    formulario.elements.codigo.focus();
+
+                    return;
+                }
+
+                const { error } = await db.from('equipos').update({ activo: !equipo.activo }).eq('id', equipo.id);
+
+                if (error) {
+                    notificarError(mensajeDeError(error));
+
+                    return;
+                }
+
+                await recargarCatalogos();
+                pintarFilas();
+            });
+
+            pintarFilas();
+        }
+
+        // -------------------------------------------------------------------
+        // Modal de solicitud
+        // -------------------------------------------------------------------
+
+        const formularioSolicitud = $('#formulario-solicitud');
+        const campos = formularioSolicitud.elements;
+
+        /** Solo opciones activas, más la que ya tenía la solicitud aunque se haya desactivado. */
+        function llenarSelect(select, lista, textoVacio, etiqueta, valorActual) {
+            const disponibles = lista.filter((item) => item.activo || item.id === valorActual);
+            select.innerHTML = `<option value="">${textoVacio}</option>${opcionesHtml(disponibles, etiqueta, valorActual)}`;
+        }
+
+        function prepararModal(solicitud) {
+            const { catalogos } = estado;
+
+            estado.solicitudEditando = solicitud;
+            formularioSolicitud.reset();
+            limpiarErrores(formularioSolicitud);
+
+            llenarSelect(campos.sede_id, catalogos.sedes, 'Seleccione una sede', (sede) => sede.nombre, solicitud?.sede_id);
+            llenarSelect(campos.programa_id, catalogos.programas, 'Seleccione un programa', (programa) => programa.nombre, solicitud?.programa_id);
+            llenarSelect(campos.asignatura_id, catalogos.asignaturas, 'Seleccione una asignatura', (asignatura) => asignatura.nombre, solicitud?.asignatura_id);
+            llenarSelect(campos.equipo_id, catalogos.equipos, 'Cualquiera disponible', etiquetaEquipo, solicitud?.equipo_id);
+
+            campos.fecha.min = fechaMinima();
+
+            $('#modal-titulo').textContent = solicitud ? 'Editar solicitud' : 'Solicitud de préstamo de videobeam';
+            $('#modal-subtitulo').textContent = solicitud
+                ? 'Actualiza los datos de la solicitud.'
+                : `Registra tu solicitud con al menos ${estado.config.dias_anticipacion} día(s) de anticipación. Quedará confirmada de inmediato si hay disponibilidad.`;
+            $('#modal-enviar').textContent = solicitud ? 'Guardar cambios' : 'Enviar solicitud';
+            $('#evidencia-actual').hidden = !solicitud?.evidencia_path;
+        }
+
+        function mostrarModal() {
+            $('#modal-solicitud').hidden = false;
+            document.body.classList.add('sin-scroll');
+            campos.sede_id.focus();
+        }
+
+        function abrirModalSolicitud({ fecha, horaInicio, horaFin } = {}) {
+            prepararModal(null);
+            campos.fecha.value = fecha ?? fechaMinima();
+            campos.hora_inicio.value = horaInicio ?? '';
+            campos.hora_fin.value = horaFin ?? '';
+            mostrarModal();
+        }
+
+        async function editarSolicitud(id) {
+            const { data: solicitud, error } = await db.from('solicitudes').select('*').eq('id', id).single();
+
+            if (error) {
+                notificarError(mensajeDeError(error));
+
+                return;
+            }
+
+            prepararModal(solicitud);
+            campos.aula.value = solicitud.aula;
+            campos.actividad.value = solicitud.actividad ?? '';
+            campos.fecha.value = solicitud.fecha;
+            campos.hora_inicio.value = formatoHora(solicitud.hora_inicio);
+            campos.hora_fin.value = formatoHora(solicitud.hora_fin);
+            campos.observaciones.value = solicitud.observaciones ?? '';
+            mostrarModal();
+        }
+
+        function cerrarModalSolicitud() {
+            $('#modal-solicitud').hidden = true;
+            document.body.classList.remove('sin-scroll');
+        }
+
+        /** Mismas reglas que valida guardar_solicitud en la base de datos. */
+        function validarSolicitud(datos, archivo) {
+            const errores = {};
+
+            if (!datos.p_sede_id) errores.sede_id = 'Seleccione una sede.';
+            if (!datos.p_aula) errores.aula = 'Indique el aula.';
+            if (!datos.p_programa_id) errores.programa_id = 'Seleccione un programa.';
+            if (!datos.p_asignatura_id) errores.asignatura_id = 'Seleccione una asignatura.';
+
+            if (!datos.p_fecha || datos.p_fecha < fechaMinima()) {
+                errores.fecha = `La fecha debe ser igual o posterior al ${formatoFecha(fechaMinima())}.`;
+            }
+
+            if (!datos.p_hora_inicio) {
+                errores.hora_inicio = 'Indique la hora de inicio.';
+            }
+
+            if (!datos.p_hora_fin || (datos.p_hora_inicio && datos.p_hora_fin <= datos.p_hora_inicio)) {
+                errores.hora_fin = 'La hora de finalización debe ser posterior a la de inicio.';
+            }
+
+            if (archivo && (!archivo.type.startsWith('image/') || archivo.size > TAMANO_MAXIMO_EVIDENCIA)) {
+                errores.evidencia = 'La evidencia debe ser una imagen de máximo 4 MB.';
+            }
+
+            return errores;
+        }
+
+        async function guardarSolicitud(evento) {
+            evento.preventDefault();
+            limpiarErrores(formularioSolicitud);
+
+            const editando = estado.solicitudEditando;
+            const archivo = campos.evidencia.files[0] ?? null;
+            const datos = {
+                p_id: editando?.id ?? null,
+                p_sede_id: Number(campos.sede_id.value) || null,
+                p_aula: campos.aula.value.trim(),
+                p_programa_id: Number(campos.programa_id.value) || null,
+                p_asignatura_id: Number(campos.asignatura_id.value) || null,
+                p_actividad: campos.actividad.value.trim() || null,
+                p_fecha: campos.fecha.value,
+                p_hora_inicio: campos.hora_inicio.value,
+                p_hora_fin: campos.hora_fin.value,
+                p_equipo_id: Number(campos.equipo_id.value) || null,
+                p_evidencia_path: null,
+                p_observaciones: campos.observaciones.value.trim() || null,
+            };
+
+            const errores = validarSolicitud(datos, archivo);
+
+            if (Object.keys(errores).length) {
+                mostrarErrores(formularioSolicitud, errores);
+
+                return;
+            }
+
+            const boton = $('#modal-enviar');
+            const textoBoton = boton.textContent;
+            boton.disabled = true;
+            boton.textContent = 'Guardando...';
+
+            try {
+                if (archivo) {
+                    const extension = (archivo.name.split('.').pop() || 'jpg').toLowerCase();
+                    datos.p_evidencia_path = `${estado.usuario.id}/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${extension}`;
+
+                    const { error } = await db.storage.from('evidencias').upload(datos.p_evidencia_path, archivo, { contentType: archivo.type });
+
+                    if (error) {
+                        mostrarErrores(formularioSolicitud, { evidencia: 'No se pudo subir la imagen. Debe ser una imagen de máximo 4 MB.' });
+
+                        return;
+                    }
+                }
+
+                const { error } = await db.rpc('guardar_solicitud', datos);
+
+                if (error) {
+                    if (datos.p_evidencia_path) {
+                        await db.storage.from('evidencias').remove([datos.p_evidencia_path]);
+                    }
+
+                    if (error.details && $(`[data-error="${error.details}"]`, formularioSolicitud)) {
+                        mostrarErrores(formularioSolicitud, { [error.details]: error.message });
+                    } else {
+                        notificarError(mensajeDeError(error));
+                    }
+
+                    return;
+                }
+
+                cerrarModalSolicitud();
+                notificarExito(editando ? 'La solicitud fue actualizada correctamente.' : 'Tu solicitud fue registrada y confirmada correctamente.');
+                refrescarVista();
+            } finally {
+                boton.disabled = false;
+                boton.textContent = textoBoton;
+            }
+        }
+
+        // -------------------------------------------------------------------
+        // Eventos globales e inicio
+        // -------------------------------------------------------------------
+
+        formularioSolicitud.addEventListener('submit', guardarSolicitud);
+
+        document.querySelectorAll('[data-cerrar-modal]').forEach((elemento) => {
+            elemento.addEventListener('click', cerrarModalSolicitud);
+        });
+
+        document.addEventListener('keydown', (evento) => {
+            if (evento.key === 'Escape' && !$('#modal-solicitud').hidden && !Swal.isVisible()) {
+                cerrarModalSolicitud();
+            }
+        });
+
+        window.addEventListener('hashchange', navegar);
+
+        $('#boton-google').addEventListener('click', async () => {
+            estado.errorLogin = null;
+
+            const { error } = await db.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: location.origin + location.pathname,
+                    queryParams: { hd: estado.config.dominio_institucional, prompt: 'select_account' },
+                },
+            });
+
+            if (error) {
+                estado.errorLogin = error.message;
+                mostrarLogin();
+            }
+        });
+
+        $('#formulario-login').addEventListener('submit', async (evento) => {
+            evento.preventDefault();
+
+            const formulario = evento.currentTarget;
+            const boton = $('button[type="submit"]', formulario);
+            boton.disabled = true;
+
+            const { error } = await db.auth.signInWithPassword({
+                email: formulario.elements.email.value.trim(),
+                password: formulario.elements.password.value,
+            });
+
+            boton.disabled = false;
+
+            if (error) {
+                estado.errorLogin = error.message;
+                mostrarLogin();
+
+                return;
+            }
+
+            formulario.reset();
+        });
+
+        $('#boton-salir').addEventListener('click', () => db.auth.signOut());
+
+        async function iniciar() {
+            if (!estaConfigurado) {
+                mostrarPantalla('configuracion');
+
+                return;
+            }
+
+            await cargarConfiguracion();
+
+            // Supabase recomienda no llamar a otros métodos dentro del callback;
+            // por eso la sesión se procesa en el siguiente ciclo.
+            db.auth.onAuthStateChange((_evento, sesion) => {
+                setTimeout(() => manejarSesion(sesion), 0);
+            });
+        }
+
+        iniciar();
+    </script>
+</body>
+</html>
